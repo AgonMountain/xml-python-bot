@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
 <root>
 
 	<branch name="Приверженность">
-		
+
 		<element name="-1">
 			<text>
 Привет! Начнем?
@@ -409,7 +408,7 @@
 			</text>
 			<additions>
 			</additions>
-			<transitions>>
+			<transitions>&gt;
 			</transitions>
 		</element>
 
@@ -1037,5 +1036,6 @@
 
 	</branch>
 
-</root>
+<branch branch_name="test_21743" />
 
+</root>
