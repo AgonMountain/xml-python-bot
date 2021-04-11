@@ -1,5 +1,4 @@
 <root>
-
 	<branch name="Приверженность">
 
 		<element name="-1">
@@ -1035,7 +1034,6 @@
 		</element>
 
 	</branch>
-
-<branch branch_name="test_21743" />
-
+<branch name="неветка">
+	</branch>
 </root>
