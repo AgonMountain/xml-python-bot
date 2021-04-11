@@ -14,7 +14,7 @@ IDONTUNDERSTAND = "Извините, я Вас не понял. Пожалуйс
 
 '''XML документ'''
 XML_PATH = '../../data/xml_data.xml'
-XML = XmlManager(XML_PATH, 'elements', 'element')
+XML = XmlManager(XML_PATH, 'branch', 'element')
 
 '''База данных'''
 DB_PATH = '../../data/db_data.db'

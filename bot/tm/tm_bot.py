@@ -30,7 +30,7 @@ async def bot(message: types.Message):
     for transition in transition_list:
         if message.text == transition.text:
             understand_flag = True
-            next_element_id = transition.get('next_element_id')
+            next_element_id = transition.get('next_element_name')
             TM_DB.update_current_element_id(user_id, next_element_id)
 
             element = XML.get_element_by_id(next_element_id)
@@ -43,7 +43,7 @@ async def bot(message: types.Message):
         for addition in addition_list:
             if message.text == addition.text:
                 understand_flag = True
-                element_id = addition.get('element_id')
+                element_id = addition.get('name')
                 ms = XML.get_element_by_id(element_id).text.text
                 break
 

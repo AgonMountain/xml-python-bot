@@ -36,7 +36,7 @@ for event in long_poll.listen():
             for transition in transition_list:
                 if event.text == transition.text:
                     understand_flag = True
-                    next_element_id = transition.get('next_element_id')
+                    next_element_id = transition.get('next_element_name')
                     VK_DB.update_current_element_id(user_id, next_element_id)
 
                     element = XML.get_element_by_id(next_element_id)
@@ -49,7 +49,7 @@ for event in long_poll.listen():
                 for addition in addition_list:
                     if event.text == addition.text:
                         understand_flag = True
-                        element_id = addition.get('element_id')
+                        element_id = addition.get('element_name')
                         message = XML.get_element_by_id(element_id).text.text
                         break
 

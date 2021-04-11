@@ -5,7 +5,7 @@ class XmlElement(object):
         """Конструктор"""
         self.element = element
 
-        self.id = self.element.get('id')
+        self.id = self.element.get('name')
         self.text = self.element.findall('text')[0]
 
         self.additions = self.element.findall('additions')[0]
