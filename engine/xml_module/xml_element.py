@@ -3,13 +3,8 @@ class XmlElement(object):
 
     def __init__(self, element):
         """Конструктор"""
-        self.element = element
+        self.id = element.get('name')
+        self.text = element.findall('text')[0]
 
-        self.id = self.element.get('name')
-        self.text = self.element.findall('text')[0]
-
-        self.additions = self.element.findall('additions')[0]
-        self.transitions = self.element.findall('transitions')[0]
-
-        self.addition_list = self.additions.findall('addition')
-        self.transition_list = self.transitions.findall('transition')
+        self.addition_list = element.findall('additions')[0].findall('addition')
+        self.transition_list = element.findall('transitions')[0].findall('transition')
