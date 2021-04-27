@@ -43,7 +43,7 @@ async def bot(message: types.Message):
         for addition in addition_list:
             if message.text == addition.text:
                 understand_flag = True
-                element_id = addition.get('name')
+                element_id = addition.get('element_name')
                 ms = XML.get_element_by_id(element_id).text.text
                 break
 
