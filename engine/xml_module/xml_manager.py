@@ -1,5 +1,4 @@
 from xml.etree import ElementTree
-from data.config import XML_PATH
 
 
 class XmlTreeManager(object):
@@ -9,9 +8,11 @@ class XmlTreeManager(object):
     > получить из ветки, создать внутри ветки, удалить из ветки элемент
     """
 
-    tree = ElementTree.parse(XML_PATH)
-    root = tree.getroot()
-    branch = None
+    def __init__(self, XML_PATH):
+        self.XML_PATH = XML_PATH
+        self.tree = ElementTree.parse(XML_PATH)
+        self.root = self.tree.getroot()
+        self.branch = None
 
     def get_branch(self, name):
         """
@@ -37,7 +38,7 @@ class XmlTreeManager(object):
             attrib = {'name': name}
             branch = self.root.makeelement('branch', attrib)
             self.root.append(branch)
-            self.tree.write(XML_PATH, encoding='UTF-8')
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
             self.switch_branch(name)
             return True
 
@@ -62,7 +63,7 @@ class XmlTreeManager(object):
         else:
             self.root.remove(self.branch)
             self.branch = None
-            self.tree.write(XML_PATH, encoding='UTF-8')
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
             return True
 
     def get_element(self, name):
@@ -74,7 +75,7 @@ class XmlTreeManager(object):
         elements = self.branch.findall('element')
         for element in elements:
             if str(element.get('name')) == str(name):
-                return element
+                return self.convert(element)
         return None
 
     def create_element(self, name, txt, adds, trs):
@@ -106,7 +107,7 @@ class XmlTreeManager(object):
             transition = ElementTree.SubElement(transitions, 'transition', attrib)
             transition.text = tr['text']
 
-        self.tree.write(XML_PATH, encoding='UTF-8')
+        self.tree.write(self.XML_PATH, encoding='UTF-8')
 
     def delete_element(self, element):
         """
@@ -116,7 +117,7 @@ class XmlTreeManager(object):
         """
         if (self.branch != None):
             self.branch.remove(element)
-            self.tree.write(XML_PATH, encoding='UTF-8')
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
             return True
         else:
             return False
