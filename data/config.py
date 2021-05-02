@@ -1,8 +1,9 @@
 """Файл конфигурации"""
 
 import os.path
-
+from engine.xml_module.xml_manager import XmlManager
 from engine.db_module.db_manager import DbManager
+
 
 '''Токены для ботов'''
 TM_BOT_TOKEN = '1606772582:AAHjEVXlN0kB6gOGwz2in08bsrhJeeNHljs'
@@ -13,7 +14,7 @@ IDONTUNDERSTAND = "Извините, я Вас не понял. Пожалуйс
 
 '''XML документ'''
 XML_PATH = '../../data/xml_data.xml'
-#XML = XmlManager(XML_PATH, 'elements', 'element')
+XML = XmlManager(XML_PATH, 'branch', 'element')
 
 '''База данных'''
 DB_PATH = '../../data/db_data.db'
