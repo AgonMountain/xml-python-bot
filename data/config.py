@@ -9,8 +9,11 @@ IDONTUNDERSTAND = "Извините, я Вас не понял. Пожалуйс
 
 '''XML документ'''
 XML_PATH = '../../data/xml_data.xml'
+XML_BRANCH_NAME_DEFAULT = 'Приверженность'
+XML_ELEMENT_NAME_DEFAULT = '-1'
+
 
 '''База данных'''
 DB_PATH = '../../data/db_data.db'
-DB_TELEGRAM_TABLE_NAME = 'tm_user'
-DB_VK_TABLE_NAME = 'vk_user'
+DB_TELEGRAM_TABLE_NAME = 'telegram_users'
+DB_VK_TABLE_NAME = 'vk_users'
