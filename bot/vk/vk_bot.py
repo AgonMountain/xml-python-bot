@@ -2,12 +2,12 @@
 
 """База данных и компоненты для работы с ней"""
 import os.path
-from engine.db_module.db_manager import DbManager
+from engine.db_manager import DbManager
 from data.config import DB_PATH, DB_VK_TABLE_NAME
 VK_DB = DbManager(os.path.abspath(os.path.join(DB_PATH)), DB_VK_TABLE_NAME)
 
 """XML и компоненты для работы с ним"""
-from engine.xml_module.xml_manager import XmlTreeManager
+from engine.xml_manager import XmlTreeManager
 from data.config import XML_PATH
 XML = XmlTreeManager(XML_PATH)
 
