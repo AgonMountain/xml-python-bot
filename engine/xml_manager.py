@@ -248,6 +248,85 @@ class XmlTree(object):
 
         return False
 
+    """ Работа с переходами: получить, создать, обновить, удалить """
+
+    def get_transition(self, element, transition_text):
+        """
+        Получить переход элемента
+        > element - элемент
+        > transition_text - текст / условие перехода
+        > return - переход - если он был найден, иначе None
+        """
+        transitions = element.findall('transitions')[0]
+
+        for transition in transitions:
+            if str(transition.text) == str(transition_text):
+                return transition
+        return None
+
+    def create_transition(self, element, branch_name, next_element_name, transition_text):
+        """
+        Создать переход внутри элемента
+        > element - элемент ветки, к которому нужно создать дополнение
+        > branch_name - имя ветки, на элемент который необходимо сделать переход
+        > next_element_name - имя элемента, на который будет выполнен переход
+        > transition_text - текст / условие перехода
+        > return - True - если переход создан, иначе False
+        """
+        transitions = element.findall('transitions')[0]
+
+        '''Проверка на повторение текста'''
+        for transition in transitions:
+            if str(transition.text) == str(transition_text):
+                return False
+
+        attrib = {'branch_name': branch_name, 'next_element_name': next_element_name}
+        transition = ElementTree.SubElement(transitions, 'transition', attrib)
+        transition.text = transition_text
+
+        self.tree.write(self.XML_PATH, encoding='UTF-8')
+        return True
+
+    def update_transition(self, element, old_transition_text, new_branch_name, new_next_element_name, new_transition_text):
+        """
+        Обновить переход внутри элемента
+        > element - элемент ветки, к которому нужно создать переход
+        > old_transition_text - старый текст / условие перехода
+        > new_branch_name - имя ветки, на элемент который необходимо сделать переход
+        > new_next_element_name - имя элемента, на который необходимо сделать переход
+        > new_transition_text - новый текст / условие перехода
+        > return - True - если дополнение обновлено, иначе False
+        """
+        transitions = element.findall('transitions')[0]
+
+        '''Проверка на существование перехода'''
+        for transition in transitions:
+            if transition.text == old_transition_text:
+                transition.set('branch_name', new_branch_name)
+                transition.set('next_element_name', new_next_element_name)
+                transition.text = new_transition_text
+                self.tree.write(self.XML_PATH, encoding='UTF-8')
+                return True
+
+        return False
+
+    def delete_transition(self, element, transition_text):
+        """
+        Удалить переход внутри элемента
+        > element - элемент, переход которого нужно удалить
+        > transition_text - текст / условие перехода
+        > return - True - если переход удален, иначе False
+        """
+        transitions = element.findall('transitions')[0]
+
+        '''Проверка на существование перехода'''
+        for transition in transitions:
+            if transition.text == transition_text:
+                transitions.remove(transition)
+                self.tree.write(self.XML_PATH, encoding='UTF-8')
+                return True
+
+        return False
 
 
 """ Ручное тестирование ): """
@@ -257,3 +336,4 @@ if __name__ == "__main__":
 
     el = tree.get_element('-1')
 
+    tree.delete_transition(el, 'Переход2')
