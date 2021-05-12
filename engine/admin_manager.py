@@ -1,5 +1,5 @@
 import sqlite3
-from engine.xml_manager import XmlTreeManager
+from engine.xml_manager import XmlTree
 from data.config import XML_PATH, DB_PATH, DB_ADMIN_TABLE_NAME
 
 class Admin(object):
@@ -15,7 +15,7 @@ class Admin(object):
         self.cursor = self.connection.cursor()
         self.table_name = DB_ADMIN_TABLE_NAME
 
-        self.xml_manager = XmlTreeManager(XML_PATH)
+        self.xml_manager = XmlTree(XML_PATH)
 
     def login(self, email, password):
         """
@@ -56,4 +56,4 @@ class Admin(object):
 
     def update_branch(self, name, update):
         self.xml_manager.switch_branch(name)
-        self.xml_manager.edit_branch(update)
+        self.xml_manager.update_branch(update)
