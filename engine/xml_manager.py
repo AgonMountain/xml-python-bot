@@ -52,6 +52,17 @@ class XmlTreeManager(object):
         else:
             return True
 
+    def edit_branch(self, name):
+        """
+        Редактировать ветку
+        """
+        if (self.get_branch(name) != None):
+            return False
+        else:
+            self.branch.set('name', name)
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+
     def delete_branch(self):
         """
         Удалить ветку
