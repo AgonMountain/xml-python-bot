@@ -1,15 +1,14 @@
 """"""
 
 """База данных и компоненты для работы с ней"""
-import os.path
 from engine.db_manager import DbManager
 from data.config import DB_PATH, DB_VK_TABLE_NAME
-VK_DB = DbManager(os.path.abspath(os.path.join(DB_PATH)), DB_VK_TABLE_NAME)
+VK_DB = DbManager(DB_PATH, DB_VK_TABLE_NAME)
 
 """XML и компоненты для работы с ним"""
-from engine.xml_manager import XmlTreeManager
+from engine.xml_manager import XmlTree
 from data.config import XML_PATH
-XML = XmlTreeManager(XML_PATH)
+XML = XmlTree(XML_PATH)
 
 """Основные элементы vk_api для работы бота"""
 import vk_api
