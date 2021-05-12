@@ -23,9 +23,11 @@ class XmlElement(object):
 
 class XmlTree(object):
     """
-    Работа с ветками и элементами дерева xml файла
-    > получить, создать, удалить ветку
-    > получить из ветки, создать внутри ветки, удалить из ветки элемент
+    Работа с ветками, элементами и компонентами элементов дерева xml файла
+    > Ветки: получить, создать, сменить, обновить, удалить
+    > Элементы: получить, создать, обновить, удалить, конвертировать
+    > Дополнения к элементу: получить, создать, обновить, удалить
+    > Переходы к элементу: получить, создать, обновить, удалить
     """
 
     def __init__(self, XML_PATH):
@@ -36,62 +38,69 @@ class XmlTree(object):
 
     """ Работа с ветками: получить, создать, сменить, обновить, удалить """
 
-    def get_branch(self, name):
+    def get_branch(self, branch_name):
         """
         Получить ветку
-        > name имя ветки
-        > return
+        > branch_name - имя ветки
+        > return - ветка, если таковая найдена, иначе None
         """
         branches = self.root.findall('branch')
         for branch in branches:
-            if str(branch.get('name')) == str(name):
+            if str(branch.get('name')) == str(branch_name):
                 return branch
         return None
 
-    def create_branch(self, name):
+    def create_branch(self, branch_name):
         """
         Создать новую ветку
-        > name уникальное имя новой ветки
-        > return
+        > branch_name - имя новой ветки (должно быть уникальным)
+        > return - True - если ветка была создана, иначе False
         """
-        if (self.get_branch(name) != None):
+        '''проверка на повторение'''
+        if self.get_branch(branch_name) != None:
             return False
         else:
-            attrib = {'name': name}
+            attrib = {'name': branch_name}
             branch = self.root.makeelement('branch', attrib)
             self.root.append(branch)
             self.tree.write(self.XML_PATH, encoding='UTF-8')
-            self.switch_branch(name)
             return True
 
-    def switch_branch(self, name):
+    def switch_branch(self, branch_name):
         """
-        Сменить активную ветку
+        Сменить *активную ветку* (для работы с ней и ее элементами)
+        > branch_name - имя ветки, которую нужно сделать активной
+        > return - True - если *активная ветка* была изменена, иначе False
         """
-        self.branch = self.get_branch(name)
-        if (self.branch == None):
-            return False
-        else:
+        branch = self.get_branch(branch_name)
+        '''проверка на существование'''
+        if branch != None:
+            self.branch = branch
             return True
+        else:
+            return False
 
-    def update_branch(self, name):
+    def update_branch(self, new_branch_name):
         """
-        Редактировать ветку
+        Редактировать имя ветки
+        > new_branch_name - новое имя ветки (должно быть уникальным)
+        > return - True - если ветка была обновлена, иначе False
         """
-        if (self.get_branch(name) != None):
+        '''проверка на повторение'''
+        if self.get_branch(new_branch_name) != None:
             return False
         else:
-            self.branch.set('name', name)
+            self.branch.set('name', new_branch_name)
             self.tree.write(self.XML_PATH, encoding='UTF-8')
             return True
 
     def delete_branch(self):
         """
-        Удалить ветку
-        > name уникальное имя существующей ветки
-        > return
+        Удалить *активную ветку*
+        > return - True - если ветка была удалена, иначе False (когда нет *активной ветки*)
+        > self.branch - если ветка была удалена, значение поля будет равным None
         """
-        if (self.branch == None):
+        if self.branch == None:
             return False
         else:
             self.root.remove(self.branch)
@@ -103,9 +112,9 @@ class XmlTree(object):
 
     def get_element(self, name):
         """
-        Получить элемент из активной ветки по имени элемента
-        > name имя элемента
-        > return
+        Получить элемент из *активной ветки*
+        > name - имя элемента
+        > return - элемент - если он был найден, иначе None
         """
         elements = self.branch.findall('element')
         for element in elements:
@@ -113,62 +122,64 @@ class XmlTree(object):
                 return element
         return None
 
-    def create_element(self, name, txt, adds, trs):
+    def create_element(self, element_name, element_text):
         """
-        Создать элемент внутри ветки
-        > branch ветка
-        > name имя элемента
-        > txt текст элемента
-        > adds дополнения в виде списка словарей ([{'branch_name':'*имя ветки*', 'element_name':'*имя элемента*'}, ...])
-        > trs переходы в виде списка словарей ([{'branch_name':'*имя ветки*', 'next_element_name':'*имя элемента*'}, ...])
-        > return
+        Создать элемент внутри *активной ветки*
+        > element_name - имя элемента (должно быть уникальным)
+        > element_text - текст элемента
+        > return - True - если элемент был создан, иначе False
         """
-        attrib = {'name': name}
-        element = ElementTree.SubElement(self.branch, 'element', attrib)
+        if self.get_element(element_name) == None:
+            attrib = {'name': element_name}
+            element = ElementTree.SubElement(self.branch, 'element', attrib)
+            text = ElementTree.SubElement(element, 'text')
+            text.text = element_text
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+        else:
+            return False
 
-        text = ElementTree.SubElement(element, 'text')
-        text.text = txt
-
-        # additions = ElementTree.SubElement(element, 'additions')
-        # transitions = ElementTree.SubElement(element, 'transitions')
-        # # создание списка additions [addition , addition , ...]
-        # for add in adds:
-        #     attrib = {'branch_name': add['branch_name'], 'element_name': add['element_name']}
-        #     addition = ElementTree.SubElement(additions, 'addition', attrib)
-        #     addition.text = add['text']
-        # # создание списка transitions [transition , transition , ...]
-        # for tr in trs:
-        #     attrib = {'branch_name': tr['branch_name'], 'next_element_name': tr['next_element_name']}
-        #     transition = ElementTree.SubElement(transitions, 'transition', attrib)
-        #     transition.text = tr['text']
-
-        self.tree.write(self.XML_PATH, encoding='UTF-8')
-
-    def udpate_element(self, element):
-        """TODO"""
-
-    def delete_element(self, element):
+    def update_element(self, old_element_name, new_element_name, new_element_text):
         """
-        Удалить элемент из активной ветки
-        > element элемент
-        > return
+        Обновить элемент внутри *активной ветки*
+        > old_element_name - старое имя элемента (по нему идет поиск)
+        > new_element_name - новое имя элемента
+        > new_element_text - новый текст внутри элемента
+        > return - True - если элемент был обновлен, иначе False
         """
-        if (self.branch != None):
+        element = self.get_element(old_element_name)
+
+        if element != None:
+            element.set('name', new_element_name)
+            element.text = new_element_text
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+        else:
+            return False
+
+    def delete_element(self, element_name):
+        """
+        Удалить элемент из *активной ветки*
+        > element_name - имя элемента
+        > return - True - если элемент был удален, иначе False
+        """
+        if self.branch != None:
+            element = self.get_element(element_name)
             self.branch.remove(element)
             self.tree.write(self.XML_PATH, encoding='UTF-8')
             return True
         else:
             return False
 
-    def convert(self, element):
+    def convert_element(self, element):
         """
-        Конвертировать element в удобный для использования формат XmlElement
-        > element элемент для конвертации
-        > return
+        Конвертировать element (xml объект) в формат XmlElement
+        > element - элемент для конвертации
+        > return - конвертированный элемент
         """
         return XmlElement(element)
 
-    """ Работа с атрибутами: получить, создать, обновить, удалить """
+    """ Работа с дополнениями: получить, создать, обновить, удалить """
 
     def get_addition(self, element, addition_text):
         """
@@ -195,17 +206,16 @@ class XmlTree(object):
         """
         additions = element.findall('additions')[0]
 
-        '''Проверка на повторение текста'''
-        for addition in additions:
-            if str(addition.text) == str(addition_text):
-                return False
+        '''проверка на повторение'''
+        if self.get_addition(element, addition_text) != None:
+            return False
+        else:
+            attrib = {'branch_name': branch_name, 'element_name': element_name}
+            addition = ElementTree.SubElement(additions, 'addition', attrib)
+            addition.text = addition_text
 
-        attrib = {'branch_name': branch_name, 'element_name': element_name}
-        addition = ElementTree.SubElement(additions, 'addition', attrib)
-        addition.text = addition_text
-
-        self.tree.write(self.XML_PATH, encoding='UTF-8')
-        return True
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
 
     def update_addition(self, element, old_addition_text, new_branch_name, new_element_name, new_addition_text):
         """
@@ -217,18 +227,17 @@ class XmlTree(object):
         > new_addition_text - текст / условие дополнения
         > return - True - если дополнение обновлено, иначе False
         """
-        additions = element.findall('additions')[0]
+        addition = self.get_addition(element, old_addition_text)
 
-        '''Проверка на существование дополнения'''
-        for addition in additions:
-            if addition.text == old_addition_text:
-                addition.set('branch_name', new_branch_name)
-                addition.set('element_name', new_element_name)
-                addition.text = new_addition_text
-                self.tree.write(self.XML_PATH, encoding='UTF-8')
-                return True
-
-        return False
+        '''проверка на существование'''
+        if addition != None:
+            addition.set('branch_name', new_branch_name)
+            addition.set('element_name', new_element_name)
+            addition.text = new_addition_text
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+        else:
+            return False
 
     def delete_addition(self, element, addition_text):
         """
@@ -238,15 +247,15 @@ class XmlTree(object):
         > return - True - если дополнение удалено, иначе False
         """
         additions = element.findall('additions')[0]
+        addition = self.get_addition(element, addition_text)
 
-        '''Проверка на существование дополнения'''
-        for addition in additions:
-            if addition.text == addition_text:
-                additions.remove(addition)
-                self.tree.write(self.XML_PATH, encoding='UTF-8')
-                return True
-
-        return False
+        '''проверка на существование'''
+        if addition != None:
+            additions.remove(addition)
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+        else:
+            return False
 
     """ Работа с переходами: получить, создать, обновить, удалить """
 
@@ -275,17 +284,15 @@ class XmlTree(object):
         """
         transitions = element.findall('transitions')[0]
 
-        '''Проверка на повторение текста'''
-        for transition in transitions:
-            if str(transition.text) == str(transition_text):
-                return False
-
-        attrib = {'branch_name': branch_name, 'next_element_name': next_element_name}
-        transition = ElementTree.SubElement(transitions, 'transition', attrib)
-        transition.text = transition_text
-
-        self.tree.write(self.XML_PATH, encoding='UTF-8')
-        return True
+        '''проверка на повторение'''
+        if self.get_transition(element, transition_text) != None:
+            return False
+        else:
+            attrib = {'branch_name': branch_name, 'next_element_name': next_element_name}
+            transition = ElementTree.SubElement(transitions, 'transition', attrib)
+            transition.text = transition_text
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
 
     def update_transition(self, element, old_transition_text, new_branch_name, new_next_element_name, new_transition_text):
         """
@@ -297,18 +304,17 @@ class XmlTree(object):
         > new_transition_text - новый текст / условие перехода
         > return - True - если дополнение обновлено, иначе False
         """
-        transitions = element.findall('transitions')[0]
+        transition = self.get_transition(element, old_transition_text)
 
-        '''Проверка на существование перехода'''
-        for transition in transitions:
-            if transition.text == old_transition_text:
-                transition.set('branch_name', new_branch_name)
-                transition.set('next_element_name', new_next_element_name)
-                transition.text = new_transition_text
-                self.tree.write(self.XML_PATH, encoding='UTF-8')
-                return True
-
-        return False
+        '''проверка на существование'''
+        if transition != None:
+            transition.set('branch_name', new_branch_name)
+            transition.set('next_element_name', new_next_element_name)
+            transition.text = new_transition_text
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+        else:
+            return False
 
     def delete_transition(self, element, transition_text):
         """
@@ -318,22 +324,18 @@ class XmlTree(object):
         > return - True - если переход удален, иначе False
         """
         transitions = element.findall('transitions')[0]
+        transition = self.get_transition(element, transition_text)
 
-        '''Проверка на существование перехода'''
-        for transition in transitions:
-            if transition.text == transition_text:
-                transitions.remove(transition)
-                self.tree.write(self.XML_PATH, encoding='UTF-8')
-                return True
-
-        return False
+        '''проверка на существование'''
+        if transition != None:
+            transitions.remove(transition)
+            self.tree.write(self.XML_PATH, encoding='UTF-8')
+            return True
+        else:
+            return False
 
 
 """ Ручное тестирование ): """
 if __name__ == "__main__":
     tree = XmlTree(XML_PATH)
-    tree.switch_branch('Приверженность')
-
-    el = tree.get_element('-1')
-
-    tree.delete_transition(el, 'Переход2')
+    
