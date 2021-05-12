@@ -133,6 +133,56 @@ class XmlTreeManager(object):
         else:
             return False
 
+    def get_addition(self, element, branch_name, element_name, text):
+        '''TODO'''
+
+    def create_addition(self, element, branch_name, element_name, text):
+        """
+        Создать дополнение
+        > element элемент ветки
+        > branch_name имя ветки, на элемент который необходимо сделать переход
+        > element_name имя элемента, который будет служить дополнением
+        > text условие дополнения
+        """
+        additions = element.findall('additions')[0]
+
+        attrib = {'branch_name': branch_name, 'element_name': element_name}
+        addition = ElementTree.SubElement(additions, 'addition', attrib)
+        addition.text = text
+
+        self.tree.write(self.XML_PATH, encoding='UTF-8')
+
+    def update_addition(self, element, name):
+        '''TODO'''
+
+    def delete_addition(self, element, name):
+        '''TODO'''
+
+    def get_transition(self, element, name):
+        '''TODO'''
+
+    def create_transition(self, element, branch_name, next_element_name, text):
+        """
+        Создать переход
+        > element элемент ветки
+        > branch_name имя ветки, на элемент который необходимо сделать переход
+        > next_element_name имя элемента на который необходимо сделать переход
+        > text условие перехода
+        """
+        transitions = element.findall('transitions')[0]
+
+        attrib = {'branch_name': branch_name, 'next_element_name': next_element_name}
+        transition = ElementTree.SubElement(transitions, 'transition', attrib)
+        transition.text = text
+
+        self.tree.write(self.XML_PATH, encoding='UTF-8')
+
+    def update_transition(self, element, name):
+        '''TODO'''
+
+    def delete_transition(self, element, name):
+        '''TODO'''
+
     def convert(self, element):
         """
         Конвертировать element в удобный для использования формат XmlElement
