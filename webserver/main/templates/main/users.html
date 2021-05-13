@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'main/css/users.css' %}" rel="stylesheet">
+    <title>Пользователи</title>
+
+</head>
+<body>
+
+<div class="users-panel">
+    <div class="users">Пользователи</div>
+    <div class="search-users-panel">
+        <input type="text" name="users" required="required">
+        <button type="submit" name="search_btn">Найти</button>
+    </div>
+
+    <table cellspacing=0>
+        <tbody>
+        <tr>
+            <th>№</th>
+            <th>ID пользователя</th>
+            <th>Имя ветки</th>
+            <th>Имя элемента</th>
+        </tr>
+        <tr>
+            <td>1</td>
+            <td>fd84gfds4g7dfsg</td>
+            <td>Приверженность</td>
+            <td>-1</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

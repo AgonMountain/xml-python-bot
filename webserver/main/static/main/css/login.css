@@ -1,0 +1,16 @@
+.login-panel {
+    width: 290px;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.login_caption {
+    font-size: 24px;
+    text-align: center;
+}
+
+.login-panel email, .login-panel password, .login-panel input, .login-panel button {
+    width: 100%;
+    margin: 5px 0;
+    padding: 5px 15px;
+}

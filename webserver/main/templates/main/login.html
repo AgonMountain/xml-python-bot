@@ -1,20 +1,22 @@
+{% load static %}
 <!doctype html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="../static/css/login.css" rel="stylesheet" type="text/css">
     <title>Вход</title>
+    <link href="{% static 'main/css/login.css' %}" rel="stylesheet">
 </head>
 <body>
-    <form class="login-form" name="login" method="POST" action="">
-        <div class="caption">Вход</div>
+    <div class="login-panel">
+        <div class="login_caption">Вход</div>
         <div>Логин</div>
-        <input type="email" name="login" required="required">
+        <input type="email" name="login-email" required="required">
         <div>Пароль</div>
-        <input type="password" name="password" required="required">
-        <input type="button" name="login_btn" value="Войти">
-    </form>
+        <input type="password" name="login-password" required="required">
+        <button type="submit" name="login_btn">Войти</button>
+    </div>
 </body>
 </html>

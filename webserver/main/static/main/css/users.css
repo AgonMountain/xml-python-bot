@@ -1,0 +1,14 @@
+TABLE {
+    width: 600px; /* Ширина таблицы */
+    border: 1px solid black; /* Рамка вокруг таблицы */
+    border-radius: 5px;
+}
+
+TD, TH {
+    padding: 3px; /* Поля вокруг содержимого ячеек */
+    text-align: center; /* Выравнивание по */
+    border-top: 1px solid;
+    border-bottom: 1px solid;
+    border-left: 1px solid;
+    border-right: 1px solid;
+}
