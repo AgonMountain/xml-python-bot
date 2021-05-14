@@ -2,3 +2,4 @@ $ cat .gitignore
 
 *.db
 *.xml
+config.py

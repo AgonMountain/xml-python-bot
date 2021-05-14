@@ -81,6 +81,6 @@ def generate(DB, XML, user_id, message_text):
 
     '''пользователь ответил что-то непонятное, говорим ему об этом + повторяем вопрос и варианты ответов'''
     if out['message'] == IDONTUNDERSTAND:
-        out['message'] += '\n\nПожалуйста, ответить на следующий вопрос посредством кнопок снизу:\n\n' + element.text.text
+        out['message'] += '\n\nПожалуйста, ответить на следующее сообщение с помощью кнопок снизу:\n\n' + element.text.text
 
     return out
