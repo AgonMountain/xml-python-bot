@@ -18,11 +18,9 @@ def generate(DB, XML, user_id, message_text):
 
     '''актуальные данные пользователя'''
     current = DB.get(user_id)
-    current_branch_name = current['current_branch_name']
-    current_element_name = current['current_element_name']
 
     '''нет пользователя в бд -> создаем его и задаем значение по умолчанию'''
-    if current_element_name == None:
+    if current == None:
         DB.add(user_id, XML_BRANCH_NAME_DEFAULT, XML_ELEMENT_NAME_DEFAULT)
 
         current = DB.get(user_id)
@@ -30,12 +28,14 @@ def generate(DB, XML, user_id, message_text):
         current_element_name = current['current_element_name']
 
         XML.switch_branch(current_branch_name)
-        element = XML.get_element(current_element_name)
+        element = XML.convert_element(XML.get_element(current_element_name))
         out['message'] = element.text.text
         stop_loop_flag = True
     else:
+        current_branch_name = current['current_branch_name']
+        current_element_name = current['current_element_name']
         XML.switch_branch(current_branch_name)
-        element = XML.get_element(current_element_name)
+        element = XML.convert_element(XML.get_element(current_element_name))
 
     '''списки текстов переходов и текстов дополнений'''
     transition_list = element.transition_list
@@ -51,7 +51,7 @@ def generate(DB, XML, user_id, message_text):
                 DB.update(user_id, next_branch_name, next_element_name)
 
                 XML.switch_branch(next_branch_name)
-                element = XML.get_element(next_element_name)
+                element = XML.convert_element(XML.get_element(next_element_name))
                 out['message'] = element.text.text
 
                 transition_list = element.transition_list
@@ -69,7 +69,7 @@ def generate(DB, XML, user_id, message_text):
                 element_name = addition.get('element_name')
 
                 XML.switch_branch(branch_name)
-                element = XML.get_element(element_name)
+                element = XML.convert_element(XML.get_element(element_name))
                 out['message'] = element.text.text
 
                 stop_loop_flag = True
@@ -78,5 +78,9 @@ def generate(DB, XML, user_id, message_text):
     transition_text_list = [transition.text for transition in transition_list]
     addition_text_list = [addition.text for addition in addition_list]
     out['button_text_list'] = transition_text_list + addition_text_list
+
+    '''пользователь ответил что-то непонятное, говорим ему об этом + повторяем вопрос и варианты ответов'''
+    if out['message'] == IDONTUNDERSTAND:
+        out['message'] += '\n\nПожалуйста, ответить на следующий вопрос посредством кнопок снизу:\n\n' + element.text.text
 
     return out
