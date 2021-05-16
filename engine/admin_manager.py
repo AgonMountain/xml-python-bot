@@ -17,6 +17,7 @@ class Admin(object):
 
         self.xml_manager = XmlTree(XML_PATH)
 
+    @staticmethod
     def login(self, email, password):
         """
         Получить имя ветки и имя элемента

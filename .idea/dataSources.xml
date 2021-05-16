@@ -8,5 +8,12 @@
       <jdbc-url>jdbc:sqlite:C:\Users\agonm\PycharmProjects\xml-python-bot\data\db_data.db</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
+    <data-source source="LOCAL" name="db" uuid="683b4433-dfdc-49ad-923e-476e56a7a962">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\agonm\PycharmProjects\xml-python-bot\webserver\db.sqlite3</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
   </component>
 </project>

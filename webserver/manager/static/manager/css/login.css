@@ -4,12 +4,12 @@
     font-weight: bold;
 }
 
-.login_caption {
+.caption {
     font-size: 24px;
     text-align: center;
 }
 
-.login-panel email, .login-panel password, .login-panel input, .login-panel button {
+.login-panel input, .login-panel button {
     width: 100%;
     margin: 5px 0;
     padding: 5px 15px;

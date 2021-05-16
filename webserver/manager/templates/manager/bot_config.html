@@ -1,0 +1,21 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Конфигурация</title>
+    <link href="{% static 'manager/css/config.css' %}" rel="stylesheet">
+</head>
+<body>
+    <form class="config" action="/config/" method="post">
+        {% csrf_token %}
+        <div class="caption">Конфигурация</div>
+        {{ form }}
+        <button class="save_btn" type="submit">Сохранить</button>
+        <button class="cancel_btn" type="submit">Отмена</button><br>
+        <div class="caption">Управление актинвость бота:</div>
+        <button class="on_btn" type="submit">Включить</button>
+        <button class="off_btn" type="submit">Выключить</button>
+    </form>
+</body>
+</html>

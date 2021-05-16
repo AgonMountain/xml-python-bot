@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Схема</title>
+</head>
+<body>
+    <form class="scheme" action="/scheme/" method="post">
+        {% csrf_token %}
+        <div class="caption">Схема</div>
+        {{ form }}
+    </form>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Переход</title>
+</head>
+<body>
+    <form class="transition" action="/transition/" method="post">
+        {% csrf_token %}
+        <div class="caption">Переход</div>
+        {{ form }}
+    </form>
+</body>
+</html>

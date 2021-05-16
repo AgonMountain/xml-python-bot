@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="{% static 'manager/css/schemes.css' %}" rel="stylesheet">
+    <title>Схемы</title>
+</head>
+<body>
+    <form class="schemes" action="/schemes/" method="post">
+        {% csrf_token %}
+        <div class="caption">Схемы</div>
+        <button class="create_btn" type="submit">Создать схему</button>
+        <button class="edit_btn" type="submit">Редактировать схему</button>
+        <button class="delete_btn" type="submit">Удалить схему</button>
+        <div class="caption">Все схемы:</div>
+        {{ form }}
+    </form>
+</body>
+</html>

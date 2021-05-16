@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
+    <link href="{% static 'manager/css/login.css' %}" rel="stylesheet">
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <div class="caption">Вход</div>
+        {{ form }}<br>
+        <button class="login_btn" type="submit">Войти</button>
+    </form>
+</body>
+</html>
