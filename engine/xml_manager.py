@@ -292,8 +292,8 @@ class XmlTreeManager(object):
         transitions = [{'original': transition,
                         'base_element_name': element.get('name'),
                         'text': transition.text,
-                        'scheme_name': transition.get('scheme_name'),
-                        'element_name': transition.get('element_name')}
+                        'transition_scheme_name': transition.get('scheme_name'),
+                        'transition_element_name': transition.get('element_name')}
                      for transition in transitions]
         return transitions
     def get_transition(self, element, text):
