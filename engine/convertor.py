@@ -110,3 +110,6 @@ class Convertor():
         for scheme in schemes:
             XML.switch_scheme(scheme['name'])
             XML.delete_scheme()
+
+if __name__ == '__main__':
+    Convertor.convert_from_xml_to_db(XML_PATH, DB_PATH)

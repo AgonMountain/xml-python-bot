@@ -1,6 +1,6 @@
 import sqlite3
 from data.config import DB_CONFIG_TABLE_NAME, DB_USER_TABLE_NAME, DB_ELEMENT_TABLE_NAME, \
-    DB_ELEMENT_ADDITION_TABLE_NAME, DB_ELEMENT_TRANSITION_TABLE_NAME, DB_SCHEME_TABLE_NAME
+    DB_ELEMENT_ADDITION_TABLE_NAME, DB_ELEMENT_TRANSITION_TABLE_NAME, DB_SCHEME_TABLE_NAME, DB_MESSENGER_TABLE_NAME
 
 class DbManager(object):
     """
@@ -107,12 +107,31 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(id),))
+            self.cursor.execute(sql_statement)
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
+
+    """ Работа с мессенджарами """
+    def get_messenger_id(self, name):
+        """
+        Получить все мессенджеры ("типы")
+        @param name имя мессенджера
+        @return id
+        """
+        sql_statement = "SELECT `id` FROM `" + DB_MESSENGER_TABLE_NAME + "` WHERE `name` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(name),))
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            return result[0]
 
     """ Работа с конфигурациями """
     def add_config(self, token, messenger_id, is_on):
@@ -162,7 +181,7 @@ class DbManager(object):
         '''Выполнение запроса + обработка ошибки'''
         try:
             self.cursor.execute(sql_statement)
-            result = self.cursor.fetchone()
+            result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
@@ -198,7 +217,7 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(id),))
+            self.cursor.execute(sql_statement)
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -301,7 +320,7 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(id),))
+            self.cursor.execute(sql_statement)
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -472,7 +491,7 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(id),))
+            self.cursor.execute(sql_statement)
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -560,7 +579,7 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(id),))
+            self.cursor.execute(sql_statement)
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -648,7 +667,7 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(id),))
+            self.cursor.execute(sql_statement)
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
