@@ -1,5 +1,4 @@
 from xml.etree import ElementTree
-from data.config import XML_PATH
 
 class XmlElement(object):
     """
@@ -21,7 +20,7 @@ class XmlElement(object):
         self.addition_list = self.additions.findall('addition')
         self.transition_list = self.transitions.findall('transition')
 
-class XmlTree(object):
+class XmlTreeManager(object):
     """
     Работа с схемами, элементами и компонентами элементов дерева xml файла
     > схемы: получить, создать, сменить, обновить, удалить
@@ -41,7 +40,8 @@ class XmlTree(object):
         """
         """
         schemes = self.root.findall('scheme')
-        schemes = [{'scheme_name': scheme.get('name')}
+        schemes = [{'scheme': scheme,
+                    'scheme_name': scheme.get('name')}
                    for scheme in schemes]
         return schemes
     def get_scheme(self, scheme_name):
@@ -116,7 +116,8 @@ class XmlTree(object):
         """
         """
         elements = self.scheme.findall('element')
-        elements = [{'element_name': element.get('name'),
+        elements = [{'element': element,
+                    'element_name': element.get('name'),
                      'element_text': element.findall('text')[0].text,
                      'scheme_name': self.scheme.get('name')}
                     for element in elements]
@@ -198,7 +199,8 @@ class XmlTree(object):
         """
         additions = element.findall('additions')[0]
         additions = additions.findall('addition')
-        additions = [{'element_name': element.get('name'),
+        additions = [{'addition': addition,
+                    'element_name': element.get('name'),
                       'addition_text': addition.text,
                       'addition_scheme_name': addition.get('scheme_name'),
                       'addition_element_name': addition.get('element_name')}
@@ -284,7 +286,8 @@ class XmlTree(object):
         """
         transitions = element.findall('transitions')[0]
         transitions = transitions.findall('transition')
-        transitions = [{'element_name': element.get('name'),
+        transitions = [{'transition': transition,
+                    'element_name': element.get('name'),
                       'transition_text': transition.text,
                       'transition_scheme_name': transition.get('scheme_name'),
                       'transition_element_name': transition.get('element_name')}
@@ -361,17 +364,3 @@ class XmlTree(object):
             return True
         else:
             return False
-
-
-    def transfer_from_xml_to_db(self):
-        pass
-
-
-
-""" Ручное тестирование ): """
-if __name__ == "__main__":
-    tree = XmlTree(XML_PATH)
-    tree.switch_scheme('Приверженность')
-    element = tree.get_element('2')
-    print(tree.get_all_additions(element))
-

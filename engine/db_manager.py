@@ -1,13 +1,13 @@
 import sqlite3
 from data.config import DB_CONFIG_TABLE_NAME, DB_USER_TABLE_NAME, DB_ELEMENT_TABLE_NAME, \
-    DB_ELEMENT_ADDITION_TABLE_NAME, DB_ELEMENT_TRANSITION_TABLE_NAME, DB_SCHEME_TABLE_NAME, DB_PATH
+    DB_ELEMENT_ADDITION_TABLE_NAME, DB_ELEMENT_TRANSITION_TABLE_NAME, DB_SCHEME_TABLE_NAME
 
 class DbManager(object):
     """
     Работа с базой данных
     """
 
-    def __init__(self):
+    def __init__(self, DB_PATH):
         """
         Конструктор (подключение к базе данных)
         """
@@ -118,7 +118,7 @@ class DbManager(object):
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(name)))
+            self.cursor.execute(sql_statement, (str(name),))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -399,8 +399,3 @@ class DbManager(object):
         Разорвать связь с базой данных
         """
         self.connection.close()
-
-
-if __name__ == '__main__':
-    dbm = DbManager()
-    print(dbm.get_all_additions_id_from_element("тест"))
