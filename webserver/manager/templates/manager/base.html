@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'manager/css/base.css' %}">
+</head>
+<body>
+<div class='bot-toggle'>
+    <label>Управление ботом:</label>
+    <button class="tm_btn" type="submit">Телеграм</button>
+    <button class="vk_btn" type="submit">Вконтакте</button>
+</div>
+<br><br>
+<div class="bot-components">
+    <label>Бот и его:</label>
+    <a href="{% url 'config' %}"><button>Конфигурация</button></a>
+    <a href="{% url 'users' %}"><button>Пользователи</button></a>
+    <a href="{% url 'schemes' %}"><button>Схемы</button></a>
+</div>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

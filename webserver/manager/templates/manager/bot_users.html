@@ -1,19 +1,32 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link href="{% static 'manager/css/users.css' %}" rel="stylesheet">
-    <title>Пользователи</title>
-</head>
-<body>
-    <form class="users" action="/users/" method="post">
-        {% csrf_token %}
-        <div class="caption">Пользователи</div>
-        {{ form_search }}
-        <button class="search_btn" type="submit">Найти</button><br>
-        <div class="caption">Все пользователи бота:</div>
-        {{ form_table }}
-    </form>
-</body>
-</html>
+{% extends 'manager/base.html' %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <div class="caption">Пользователи</div><br>
+    {{ form_search }}
+    <button class="search_btn" type="submit">Найти</button>
+    <br><br>
+    <div class="caption">Все пользователи бота:</div>
+    <table class="table">
+        <tbody>
+        <tr>
+            <th>№</th>
+            <th>ID пользователя</th>
+            <th>Имя схемы</th>
+            <th>Имя элемента</th>
+        </tr>
+        {% for td in form.tds %}
+        <tr>
+            <td>td.id</td>
+            <td>td.user_id</td>
+            <td>td.scheme_name</td>
+            <td>td.element_name</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endblock %}
