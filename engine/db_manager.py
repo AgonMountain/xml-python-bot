@@ -13,44 +13,60 @@ class DbManager(object):
         """
         self.connection = sqlite3.connect(DB_PATH)
         self.cursor = self.connection.cursor()
-
-    def add_user(self, user_id, element_id, messenger_id):
+    def disconnect(self):
         """
+        Разорвать связь с базой данных
+        """
+        self.connection.close()
+
+    """ Работа с пользователями """
+    def add_user(self, user_messenger_id, element_id, messenger_id):
+        """
+        Добавить пользователя
+        @param user_messenger_id id пользователя внутри мессенджера
+        @param element_id id элемента на котором остановился пользователь
+        @param messenger_id id мессенджера
         """
         sql_statement = "INSERT INTO `" + DB_USER_TABLE_NAME + \
                         "` (`user_id`, `messenger_id`, `element_id`) VALUES(?,?,?)"
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(user_id), str(messenger_id), str(element_id)))
+            self.cursor.execute(sql_statement, (str(user_messenger_id), str(messenger_id), str(element_id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
-    def update_user(self, user_id, new_element_id, new_messenger_id):
+    def update_user(self, user_messenger_id, new_element_id):
         """
+        Обновить данные пользователя
+        @param user_messenger_id id пользователя внутри мессенджера
+        @param new_element_id id элемента
         """
         sql_statement = "UPDATE `" + DB_USER_TABLE_NAME + \
-                        "` SET `element_id` = ?, `messenger_id` = ? WHERE `user_id` = ?"
+                        "` SET `element_id` = ? WHERE `user_id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(new_element_id), str(new_messenger_id), str(user_id)))
+            self.cursor.execute(sql_statement, (str(new_element_id), str(user_messenger_id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
-    def get_user_data(self, user_id):
+    def get_user_data(self, user_messenger_id):
         """
+        Получить данные пользователя
+        @param user_messenger_id id пользователя внутри мессенджера
+        @return {'id', 'user_id', 'element_id', 'messenger_id'}
         """
         sql_statement = "SELECT `id`, `user_id`, `element_id`, `messenger_id` FROM `" + DB_USER_TABLE_NAME + \
                         "` WHERE `user_id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(user_id),))
+            self.cursor.execute(sql_statement, (str(user_messenger_id),))
             result = self.cursor.fetchone()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -62,8 +78,13 @@ class DbManager(object):
                 r = {'id': result[0], 'user_id': result[1], 'element_id': result[2], 'messenger_id': result[3]}
                 return r
 
+    """ Работа с конфигурациями """
     def add_config(self, token, messenger_id, is_on):
         """
+        Добавить конфигурацию
+        @param token токен для подключения бота к мессенджеру
+        @param messenger_id id мессенджера
+        @param is_on состояние активности бота
         """
         sql_statement = "INSERT INTO `" + DB_CONFIG_TABLE_NAME + \
                         "` (`messenger_id`, `token`, `is_on`) VALUES(?,?,?)"
@@ -76,29 +97,52 @@ class DbManager(object):
             print('Error:', error)
         else:
             self.connection.commit()
-    def update_config(self, token, new_messenger_id, new_token, new_is_on):
+    def update_config(self, id, new_token, new_is_on):
         """
+        Обновить данные конфигурации
+        @param id id конфигурации
+        @param new_token новый токен для подключения бота к мессенджеру
+        @param new_is_on новое состояние активности бота
         """
         sql_statement = "UPDATE `" + DB_CONFIG_TABLE_NAME + \
-                        "` SET `messenger_id` = ?, `token` = ?, `is_on` = ? WHERE `token` = ?"
+                        "` SET `token` = ?, `is_on` = ? WHERE `id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(new_messenger_id), str(new_token), str(new_is_on), str(token)))
+            self.cursor.execute(sql_statement, (str(new_token), str(new_is_on), str(id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
-    def get_config_data(self, token):
+    def get_all_configs(self):
         """
+        Получить все конфигурации в виде списка словарей, содержащих данные конфигурации
+        @return [ {'id', 'messenger_id', 'token', 'is_on'} ]
         """
-        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
-                        "` WHERE `token` = ?"
+        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + "`"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(token),))
+            self.cursor.execute(sql_statement)
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            return {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
+    def get_config_data(self, id):
+        """
+        Получить данные конфигурации
+        @param token токен для подключения бота к мессенджеру, по которму мы будет искать конфигурацию для получения данных
+        @return {'id', 'messenger_id', 'token', 'is_on'}
+        """
+        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
+                        "` WHERE `id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(id),))
             result = self.cursor.fetchone()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -107,11 +151,14 @@ class DbManager(object):
             if result == None:
                 return result
             else:
-                r = {'id': result[0],'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
+                r = {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
                 return r
 
+    """ Работа с схемами """
     def add_scheme(self, name):
         """
+        Добавить схему
+        @param name имя схемы
         """
         sql_statement = "INSERT INTO `" + DB_SCHEME_TABLE_NAME + \
                         "` (`name`) VALUES(?)"
@@ -124,29 +171,51 @@ class DbManager(object):
             print('Error:', error)
         else:
             self.connection.commit()
-    def update_scheme(self, name, new_name):
+    def update_scheme(self, id, new_name):
         """
+        Обновить данные схемы
+        @param id имя схемы, по которому мы будет искать схему для обновления
+        @param new_name новое имя схемы
         """
         sql_statement = "UPDATE `" + DB_SCHEME_TABLE_NAME + \
-                        "` SET `name` = ? WHERE `name` = ?"
+                        "` SET `name` = ? WHERE `id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(new_name), str(name)))
+            self.cursor.execute(sql_statement, (str(new_name), str(id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
-    def get_scheme_data(self, name):
+    def get_all_schemes(self):
         """
+        Получить все схемы в виде списка словарей, содержащих данные схемы
+        @return [ {'id', 'name'} ]
         """
-        sql_statement = "SELECT `id` FROM `" + DB_SCHEME_TABLE_NAME + \
-                        "` WHERE `name` = ?"
+        sql_statement = "SELECT `id`, `name` FROM `" + DB_SCHEME_TABLE_NAME + "`"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(name),))
+            self.cursor.execute(sql_statement)
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            return {'id': result[0], 'name': result[1]}
+    def get_scheme_data(self, id):
+        """
+        Получить данные схемы
+        @param id id схемы
+        @return {'id', 'name'}
+        """
+        sql_statement = "SELECT `name` FROM `" + DB_SCHEME_TABLE_NAME + \
+                        "` WHERE `id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(id),))
             result = self.cursor.fetchone()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -155,24 +224,31 @@ class DbManager(object):
             if result == None:
                 return result
             else:
-                r = {'id': result[0], 'name': name}
+                r = {'id': id, 'name': result[0]}
                 return r
-    def remove_scheme(self, name):
+    def remove_scheme(self, id):
         """
+        Удалить схему
+        @param id имя схемы
         """
-        sql_statement = "DELETE FROM `" + DB_SCHEME_TABLE_NAME + "` WHERE `name` = ?"
+        sql_statement = "DELETE FROM `" + DB_SCHEME_TABLE_NAME + "` WHERE `id` = ?"
 
         """Выполнение запроса + обработка ошибки"""
         try:
-            self.cursor.execute(sql_statement, (str(name),))
+            self.cursor.execute(sql_statement, (str(id),))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
 
+    """ Работа с элементами """
     def add_element(self, name, text, scheme_id):
         """
+        Добавить элемент
+        @param name имя элемента
+        @param text текст элемента
+        @param scheme_id id схемы
         """
         sql_statement = "INSERT INTO `" + DB_ELEMENT_TABLE_NAME + \
                         "` (`name`, `text`, `scheme_id`) VALUES(?,?,?)"
@@ -185,29 +261,36 @@ class DbManager(object):
             print('Error:', error)
         else:
             self.connection.commit()
-    def update_element(self, name, new_text):
+    def update_element(self, id, new_name, new_text):
         """
+        Обновить данные элемента
+        @param id id элемента
+        @param new_name новое имя элемента
+        @param new_text новый текст элемента
         """
         sql_statement = "UPDATE `" + DB_ELEMENT_TABLE_NAME + \
-                        "` SET `text` = ? WHERE `name` = ?"
+                        "` SET `name` = ?, `text` = ? WHERE `id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(new_text), str(name)))
+            self.cursor.execute(sql_statement, (str(new_name), str(new_text), str(id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
-    def get_element_data(self, name):
+    def get_all_elements(self, scheme_id):
         """
+        Получить все элемент схемы в виде списка словарей, содержащих данные элемента
+        @param scheme_id id схемы
+        @return [ {'id', 'name', 'text', 'scheme_id'} ]
         """
         sql_statement = "SELECT `id`, `name`, `text`, `scheme_id` FROM `" + DB_ELEMENT_TABLE_NAME + \
-                        "` WHERE `name` = ?"
+                        "` WHERE `scheme_id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(name),))
+            self.cursor.execute(sql_statement, (str(scheme_id),))
             result = self.cursor.fetchone()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -218,24 +301,34 @@ class DbManager(object):
             else:
                 r = {'id': result[0], 'name': result[1], 'text': result[2], 'scheme_id': result[3]}
                 return r
-    def remove_element(self, name):
+    def get_element_data(self, id):
         """
+        Получить данные элемента
+        @param id id элемента
+        @return [ {'id', 'name', 'text', 'scheme_id'} ]
         """
-        sql_statement = "DELETE FROM `" + DB_SCHEME_TABLE_NAME + "` WHERE `name` = ?"
+        sql_statement = "SELECT `id`, `name`, `text`, `scheme_id` FROM `" + DB_ELEMENT_TABLE_NAME + \
+                        "` WHERE `id` = ?"
 
-        """Выполнение запроса + обработка ошибки"""
+        '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(name),))
-            result = self.cursor.fetchall()
+            self.cursor.execute(sql_statement, (str(id),))
+            result = self.cursor.fetchone()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
         else:
             self.connection.commit()
-    def get_all_additions_id_from_element(self, name):
+            if result == None:
+                return result
+            else:
+                r = {'id': result[0], 'name': result[1], 'text': result[2], 'scheme_id': result[3]}
+                return r
+    def get_all_additions_id_from_element(self, element_id):
         """
+        Получить все id дополнений элемента в виде списка
+        @param element_id id элемента
+        @return [ id, ]
         """
-        element_id = self.get_element_data(name)['id']
-
         sql_statement = "SELECT `id` FROM `" + DB_ELEMENT_ADDITION_TABLE_NAME + \
                         "` WHERE `element_id` = ?"
 
@@ -251,11 +344,12 @@ class DbManager(object):
                 return result
             else:
                 return result
-    def get_all_transitions_id_from_element(self, name):
+    def get_all_transitions_id_from_element(self, element_id):
         """
+        Получить все id переходов элемента в виде списка
+        @param element_id id элемента
+        @return [ id, ]
         """
-        element_id = self.get_element_data(name)['id']
-
         sql_statement = "SELECT `id` FROM `" + DB_ELEMENT_TRANSITION_TABLE_NAME + \
                         "` WHERE `element_id` = ?"
 
@@ -271,9 +365,29 @@ class DbManager(object):
                 return result
             else:
                 return result
+    def remove_element(self, id):
+        """
+        Удалить элемент
+        @param id id элемента
+        """
+        sql_statement = "DELETE FROM `" + DB_SCHEME_TABLE_NAME + "` WHERE `id` = ?"
 
+        """Выполнение запроса + обработка ошибки"""
+        try:
+            self.cursor.execute(sql_statement, (str(id),))
+            result = self.cursor.fetchall()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+
+    """ Работа с дополнениями """
     def add_addition(self, element_id, addition_id, text):
         """
+        Добавить дополнение
+        @param element_id id элемента, которому принадлежит дополнение
+        @param addition_id id элемента, которое будет служить дополнением
+        @param text текст / условие вывода дополнения
         """
         sql_statement = "INSERT INTO `" + DB_ELEMENT_ADDITION_TABLE_NAME + \
                         "` (`addition_id`, `text`, `element_id`) VALUES(?,?,?)"
@@ -286,15 +400,18 @@ class DbManager(object):
             print('Error:', error)
         else:
             self.connection.commit()
-    def update_addition(self, id, new_addition_id, new_text):
+    def update_addition(self, id, new_text):
         """
+        Обновить данные дополнения
+        @param id id дополнения
+        @param new_text новый текст / условие вывода дополнения
         """
         sql_statement = "UPDATE `" + DB_ELEMENT_ADDITION_TABLE_NAME + \
-                        "` SET `addition_id` = ?, `text` = ? WHERE `id` = ?"
+                        "` SET `text` = ? WHERE `id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(new_addition_id), str(new_text), str(id)))
+            self.cursor.execute(sql_statement, (str(new_text), str(id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -302,6 +419,9 @@ class DbManager(object):
             self.connection.commit()
     def get_addition_data(self, id):
         """
+        Получить данные дополнения
+        @param id id дополнения
+        @return {'id', 'addition_id', 'text', 'element_id'}
         """
         sql_statement = "SELECT `id`, `addition_id`, `text`, `element_id` FROM `" + DB_ELEMENT_ADDITION_TABLE_NAME + \
                         "` WHERE `id` = ?"
@@ -321,6 +441,8 @@ class DbManager(object):
                 return r
     def remove_addition(self, id):
         """
+        Удалить дополнение
+        @param id id дополнения
         """
         sql_statement = "DELETE FROM `" + DB_ELEMENT_ADDITION_TABLE_NAME + "` WHERE `id` = ?"
 
@@ -333,8 +455,13 @@ class DbManager(object):
         else:
             self.connection.commit()
 
+    """ Работа с переходами """
     def add_transition(self, element_id, transition_id, text):
         """
+        Добавить переход
+        @param element_id id элемента, которому принадлежит переход
+        @param transition_id id элемента, на который будет выполнен переход
+        @param text текст / условие перехода
         """
         sql_statement = "INSERT INTO `" + DB_ELEMENT_TRANSITION_TABLE_NAME + \
                         "` (`transition_id`, `text`, `element_id`) VALUES(?,?,?)"
@@ -347,15 +474,18 @@ class DbManager(object):
             print('Error:', error)
         else:
             self.connection.commit()
-    def update_transition(self, id, new_transition_id, new_text):
+    def update_transition(self, id, new_text):
         """
+        Обновить данные перехода
+        @param id id перехода
+        @param new_text новый текст / условие перехода
         """
         sql_statement = "UPDATE `" + DB_ELEMENT_TRANSITION_TABLE_NAME + \
-                        "` SET `transition_id` = ?, `text` = ? WHERE `id` = ?"
+                        "` SET `text` = ? WHERE `id` = ?"
 
         '''Выполнение запроса + обработка ошибки'''
         try:
-            self.cursor.execute(sql_statement, (str(new_transition_id), str(new_text), str(id)))
+            self.cursor.execute(sql_statement, (str(new_text), str(id)))
             result = self.cursor.fetchall()
         except sqlite3.DatabaseError as error:
             print('Error:', error)
@@ -363,6 +493,9 @@ class DbManager(object):
             self.connection.commit()
     def get_transition_data(self, id):
         """
+        Получить данные перехода
+        @param id id перехода
+        @return {'id', 'transition_id', 'text', 'element_id'}
         """
         sql_statement = "SELECT `id`, `transition_id`, `text`, `element_id` FROM `" + DB_ELEMENT_TRANSITION_TABLE_NAME + \
                         "` WHERE `id` = ?"
@@ -382,6 +515,8 @@ class DbManager(object):
                 return r
     def remove_transition(self, id):
         """
+        Удалить переход
+        @param id id перехода
         """
         sql_statement = "DELETE FROM `" + DB_ELEMENT_TRANSITION_TABLE_NAME + "` WHERE `id` = ?"
 
@@ -393,9 +528,3 @@ class DbManager(object):
             print('Error:', error)
         else:
             self.connection.commit()
-
-    def disconnect(self):
-        """
-        Разорвать связь с базой данных
-        """
-        self.connection.close()
