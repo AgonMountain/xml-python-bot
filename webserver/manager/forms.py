@@ -1,10 +1,10 @@
 from django.forms import ModelForm, TextInput
-from .models import Config
 from django import forms
 from django.contrib.auth.models import User
+from .models import User as MyUser
+from .models import Config, Messenger
 
-
-class LoginForm(forms.ModelForm):
+class LoginForm(ModelForm):
 
     password = forms.CharField(widget=forms.PasswordInput())
 
@@ -30,49 +30,32 @@ class LoginForm(forms.ModelForm):
         fields = ['username', 'password']
 
 
-class ConfigForm(forms.Form):
-    class Mete:
+class ConfigForm(ModelForm):
+    messenger = Messenger.objects.get(name='telegram')
+    config = Config.objects.get(messenger=messenger.id)
+
+
+    token = forms.CharField(max_length=100, required=True, label='Токен',
+                    widget=forms.TextInput(attrs={'placeholder': 'токен'}), initial=config.token)
+    is_on = forms.CharField(max_length=100, label='Бот включен',
+                    widget=forms.CheckboxInput(), initial=config.is_on)
+
+
+    class Meta:
         model = Config
-        fields = ['bot_type', 'bot_token', 'bot_is_on']
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['bot_type'].label = 'Тип бота'
-#         self.fields['bot_token'].label = 'Токен'
-#         self.fields['bot_is_on'].label = 'Бот включен'
-#
-#         config = Config.objects.filter(bot_type='telegram').first()
-#
-#         self.fields['bot_type'] = config['bot_type']
-#         self.fields['bot_token'] = config['bot_token']
-#         self.fields['bot_is_on'] = config['bot_is_on']
-#
-
-    # def clean(self):
-    #     bot_token = self.cleaned_data['bot_token']
-    #     bot_is_on = self.cleaned_data['bot_is_on']
-    #     if not Config.objects.filter(bot_token=bot_token).exists():
-    #         raise forms.ValidationError(f'Пользователь с логином {username} не найден в системе.')
-    #     user = User.objects.filter(username=username).first()
-    #     if user:
-    #         if not user.check_password(password):
-    #             raise forms.ValidationError(f'Неверный пароль.')
-    #
-    #     return self.cleaned_data
-    #
-    # class Meta:
-    #     model = Config
-    #     fields = ['bot_type', 'bot_token', 'bot_is_on']
+        fields = ['token', 'is_on']
 
 
-class BotUsersForm(forms.Form):
-    search_id = forms.CharField(max_length=40, required='required', label='ID пользователя')
+class FindUserForm(ModelForm):
+
+    search_id = forms.CharField(max_length=40, required=False, label='ID пользователя',
+                    widget=forms.TextInput(attrs={'placeholder': 'все пользователи'}))
+
+    class Meta:
+        model = MyUser
+        fields = ['search_id']
 
 
-class BotUsersTableForm(forms.Form):
-    tr_number = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='Номер')
-    tr_id = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='ID пользователя')
-    tr_scheme = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='Имя схемы')
-    tr_element = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='Имя элемента')
 
 
 class BotSchemesForm(forms.Form):

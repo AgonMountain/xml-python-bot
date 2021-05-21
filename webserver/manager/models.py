@@ -54,7 +54,7 @@ class Scheme(models.Model):
 
 class Element(models.Model):
     scheme = models.ForeignKey('Scheme', on_delete=models.CASCADE)
-    name = models.CharField('Имя элемента', max_length=100, unique=True)
+    name = models.CharField('Имя элемента', max_length=100)
     text = models.TextField('Текст элемента')
 
     def __str__(self):

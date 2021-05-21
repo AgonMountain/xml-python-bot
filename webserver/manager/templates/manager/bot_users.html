@@ -1,11 +1,15 @@
 {% extends 'manager/base.html' %}
-
+{% load static %}
 {% block title %}Пользователи{% endblock %}
 
+
 {% block content %}
+<link rel="stylesheet" href="{% static 'manager/css/users.css' %}">
+
 <form method="post">
     {% csrf_token %}
-    <div class="caption">Пользователи</div><br>
+    <div class="caption">Пользователи</div>
+    <br>
     {{ form_search }}
     <button class="search_btn" type="submit">Найти</button>
     <br><br>
@@ -14,18 +18,32 @@
         <tbody>
         <tr>
             <th>№</th>
+            <th>Мессенджер</th>
             <th>ID пользователя</th>
             <th>Имя схемы</th>
             <th>Имя элемента</th>
         </tr>
-        {% for td in form.tds %}
+        {% if error %}
+            <p>{{ error }}</p>
+        {% elif user_td %}
         <tr>
-            <td>td.id</td>
-            <td>td.user_id</td>
-            <td>td.scheme_name</td>
-            <td>td.element_name</td>
+            <td>1</td>
+            <td>{{ user_td.messenger }}</td>
+            <td>{{ user_td.user_id }}</td>
+            <td>{{ user_td.element.scheme.name }}</td>
+            <td>{{ user_td.element.text }}</td>
         </tr>
-        {% endfor %}
+        {% else %}
+            {% for user in users %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ user.messenger }}</td>
+                <td>{{ user.user_id }}</td>
+                <td>{{ user.element.scheme.name }}</td>
+                <td>{{ user.element.text }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
         </tbody>
     </table>
 </form>

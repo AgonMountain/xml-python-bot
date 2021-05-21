@@ -1,17 +1,15 @@
 {% extends 'manager/base.html' %}
-
+{% load static %}
 {% block title %}Конфигурация{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'manager/css/config.css' %}">
+
 <form method="post">
     {% csrf_token %}
     <div class="caption">Конфигурация</div><br>
-    {{ form }}
+    {{ config_form }}
     <button class="save_btn" type="submit">Сохранить</button>
     <button class="cancel_btn" type="submit">Отмена</button>
-    <br>
-    <div class="caption">Управление актинвость бота:</div>
-    <button class="on_btn" type="submit">Включить</button>
-    <button class="off_btn" type="submit">Выключить</button>
 </form>
 {% endblock %}
