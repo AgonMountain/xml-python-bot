@@ -1,6 +1,6 @@
 from engine.xml_manager import XmlTreeManager
 from engine.db_manager import DbManager
-from data.config import DB_PATH, XML_PATH
+
 
 class Convertor():
 
@@ -110,6 +110,3 @@ class Convertor():
         for scheme in schemes:
             XML.switch_scheme(scheme['name'])
             XML.delete_scheme()
-
-if __name__ == '__main__':
-    Convertor.convert_from_xml_to_db(XML_PATH, DB_PATH)
