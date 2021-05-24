@@ -1,7 +1,10 @@
 import subprocess, os.path, time
+import webbrowser
 from engine.db_manager import DbManager
 from engine.convertor import Convertor
-from data.config import DB_PATH, XML_PATH
+
+DB_PATH = os.path.abspath(os.path.join('../webserver/db.sqlite3'))
+XML_PATH = os.path.abspath(os.path.join('../data/xml_data.xml'))
 
 DB = DbManager(DB_PATH)
 
@@ -17,6 +20,8 @@ old_vk_token = ''
 webserver = subprocess.Popen(['python', '../webserver/manage.py', 'runserver'])
 if webserver:
     print('Сервер запущен - ' + str(time.ctime()))
+    webbrowser.open('http://127.0.0.1:8000/admin/', new=2)
+    print('Открыта страница для администратора - ' + str(time.ctime()))
 
 while True:
     telegram_config = DB.get_config('tm')
@@ -29,7 +34,7 @@ while True:
     if old_telegram_token != telegram_config['token']:
         if vkbot != None:
             tmbot.terminate()
-        tmbot = subprocess.Popen(['python', 'tm/tm_bot.py'])
+        tmbot = subprocess.Popen(['python', '../bot/tm/tm_bot.py'])
         old_telegram_token = telegram_config['token']
         print('Токен для бота Телеграм был обновлен - ' + str(time.ctime()))
 
@@ -37,7 +42,7 @@ while True:
     if old_vk_token != vk_config['token']:
         if vkbot != None:
             vkbot.terminate()
-        vkbot = subprocess.Popen(['python', 'vk/vk_bot.py'])
+        vkbot = subprocess.Popen(['python', '../bot/vk/vk_bot.py'])
         old_vk_token = vk_config['token']
         print('Токен для бота Вконтакте был обновлен - ' + str(time.ctime()))
 
