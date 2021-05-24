@@ -1,6 +1,7 @@
 import sqlite3
 from data.config import DB_CONFIG_TABLE_NAME, DB_USER_TABLE_NAME, DB_ELEMENT_TABLE_NAME, \
-    DB_ELEMENT_ADDITION_TABLE_NAME, DB_ELEMENT_TRANSITION_TABLE_NAME, DB_SCHEME_TABLE_NAME, DB_MESSENGER_TABLE_NAME
+    DB_ELEMENT_ADDITION_TABLE_NAME, DB_ELEMENT_TRANSITION_TABLE_NAME, DB_SCHEME_TABLE_NAME, DB_MESSENGER_TABLE_NAME, \
+    DB_NEED_FOR_UPDATE_XML
 
 class DbManager(object):
     """
@@ -34,6 +35,61 @@ class DbManager(object):
         else:
             self.connection.commit()
             return result[0]
+
+    def get_config(self, messenger_name):
+        """
+        """
+        messenger_id = self.get_messenger_id(messenger_name)
+
+        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
+                        "` WHERE `messenger_id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(messenger_id),))
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            if result == None:
+                return result
+            else:
+                r = {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
+                return r
+
+    def get_need_for_update_xml(self):
+        """
+        """
+        sql_statement = "SELECT `need_update` FROM `" + DB_NEED_FOR_UPDATE_XML + \
+                        "` WHERE `id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(1),))
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            if result == None:
+                return result
+            else:
+                return result[0]
+    def update_need_for_update_xml(self, need_update):
+        """
+        """
+        sql_statement = "UPDATE `" + DB_NEED_FOR_UPDATE_XML + \
+                        "` SET `need_update` = ? WHERE `id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(need_update), str(1)))
+            result = self.cursor.fetchall()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
 
     # TODO
     def from_list_to_glossary(self, list):

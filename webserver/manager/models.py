@@ -1,6 +1,20 @@
 from django.db import models
 
 
+class XmlUpdate(models.Model):
+    need_update = models.BooleanField('Требуется обновление файла XML')
+
+    def __str__(self):
+        need_update_str = "Нет"
+        if self.need_update:
+            need_update_str = "Да"
+        return 'Требуется обновление XML файла: ' + need_update_str
+
+    class Meta:
+        verbose_name = 'Обновление'
+        verbose_name_plural = '0. Обновление'
+
+
 class Messenger(models.Model):
     name = models.CharField('Имя мессенджера', max_length=100, unique=True)
 
@@ -9,7 +23,7 @@ class Messenger(models.Model):
 
     class Meta:
         verbose_name = 'Мессенджер'
-        verbose_name_plural = '1_Мессенджеры'
+        verbose_name_plural = '1. Мессенджеры'
 
 
 class Config(models.Model):
@@ -25,7 +39,7 @@ class Config(models.Model):
 
     class Meta:
         verbose_name = 'Конфигурация'
-        verbose_name_plural = '2_Конфигурации'
+        verbose_name_plural = '2. Конфигурации'
 
 
 class User(models.Model):
@@ -34,35 +48,35 @@ class User(models.Model):
     element = models.ForeignKey('Element', null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
-        return self.user_id + " : " + self.element.name
+        return '(' + self.messenger.name + ') ' + self.user_id + ": " + self.element.text
 
     class Meta:
         verbose_name = 'Пользователь'
-        verbose_name_plural = '3_Пользователи'
+        verbose_name_plural = '3. Пользователи'
 
 
 class Scheme(models.Model):
-    name = models.CharField('Имя ветки', max_length=100, unique=True)
+    name = models.CharField('Имя схемы', max_length=100, unique=True)
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'Схема'
-        verbose_name_plural = '4_Схемы'
+        verbose_name_plural = '4. Схемы'
 
 
 class Element(models.Model):
     scheme = models.ForeignKey('Scheme', on_delete=models.CASCADE)
-    name = models.CharField('Имя элемента', max_length=100)
+    name = models.CharField('Имя элемента', max_length=100, unique=True)
     text = models.TextField('Текст элемента')
 
     def __str__(self):
-        return self.name
+        return self.scheme.name + ': ' + self.text
 
     class Meta:
         verbose_name = 'Элемент'
-        verbose_name_plural = '5_Элементы'
+        verbose_name_plural = '5. Элементы'
 
 
 class ElementAddition(models.Model):
@@ -71,11 +85,11 @@ class ElementAddition(models.Model):
     text = models.CharField('Текст дополнения', max_length=100)
 
     def __str__(self):
-        return self.text
+        return self.element.text + ': ' + self.text
 
     class Meta:
         verbose_name = 'Дополнение'
-        verbose_name_plural = '6_Дополнения'
+        verbose_name_plural = '6. Дополнения'
 
 
 class ElementTransition(models.Model):
@@ -84,8 +98,8 @@ class ElementTransition(models.Model):
     text = models.CharField('Текст перехода', max_length=100)
 
     def __str__(self):
-        return self.text
+        return self.element.text + ': ' + self.text
 
     class Meta:
         verbose_name = 'Переход'
-        verbose_name_plural = '7_Переходы'
+        verbose_name_plural = '7. Переходы'

@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 
 
+admin.site.register(XmlUpdate)
 admin.site.register(Messenger)
 admin.site.register(Config)
 admin.site.register(User)

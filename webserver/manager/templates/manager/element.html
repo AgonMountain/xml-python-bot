@@ -1,0 +1,59 @@
+{% extends 'manager/base_empty.html' %}
+{% load static %}
+{% block title %}Элемент{% endblock %}
+
+{% block content %}
+<div>
+    <div class="caption">Элемент</div>
+        <button>Вернуться назад</button>
+</div>
+<br>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <span>{{ error }}</span>
+    <button name="save_btn" type="submit">Сохранить</button>
+    <button name="cancel_btn" type="submit">Отмена</button>
+    <br><br>
+    <div class="caption">Дополнения</div>
+    <table>
+        <tbody>
+        <tr>
+            <th>№</th>
+            <th>Текст дополнения</th>
+            <th>Имя дополнения</th>
+            <th>Управление</th>
+        </tr>
+        {% for element in elements %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ element.name }}</td>
+            <td>{{ element.additions_number }}</td>
+            <td></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br><br>
+    <div class="caption">Переходы</div>
+    <table>
+        <tbody>
+        <tr>
+            <th>№</th>
+            <th>Текст перехода</th>
+            <th>Имя перехода</th>
+            <th>Управление</th>
+        </tr>
+        {% for element in elements %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ element.name }}</td>
+            <td>{{ element.additions_number }}</td>
+            <td></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endblock %}

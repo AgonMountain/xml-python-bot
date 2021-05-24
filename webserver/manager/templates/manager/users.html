@@ -4,7 +4,7 @@
 
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'manager/css/users.css' %}">
+<!--<link rel="stylesheet" href="{% static 'manager/css/users.css' %}">-->
 
 <form method="post">
     {% csrf_token %}
@@ -15,6 +15,9 @@
     <br><br>
     <div class="caption">Все пользователи бота:</div>
     <table class="table">
+        {% if error %}
+            <p>{{ error }}</p>
+        {% elif user_td %}
         <tbody>
         <tr>
             <th>№</th>
@@ -23,9 +26,6 @@
             <th>Имя схемы</th>
             <th>Имя элемента</th>
         </tr>
-        {% if error %}
-            <p>{{ error }}</p>
-        {% elif user_td %}
         <tr>
             <td>1</td>
             <td>{{ user_td.messenger }}</td>
@@ -34,6 +34,14 @@
             <td>{{ user_td.element.text }}</td>
         </tr>
         {% else %}
+        <tbody>
+        <tr>
+            <th>№</th>
+            <th>Мессенджер</th>
+            <th>ID пользователя</th>
+            <th>Имя схемы</th>
+            <th>Имя элемента</th>
+        </tr>
             {% for user in users %}
             <tr>
                 <td>{{ forloop.counter }}</td>

@@ -1,11 +1,11 @@
-from django.forms import ModelForm, TextInput
+from django.forms import ModelForm, TextInput, CheckboxInput
 from django import forms
 from django.contrib.auth.models import User
 from .models import User as MyUser
-from .models import Config, Messenger
+from .models import Config, Scheme, Element, ElementAddition, ElementTransition
+
 
 class LoginForm(ModelForm):
-
     password = forms.CharField(widget=forms.PasswordInput())
 
     def __init__(self, *args, **kwargs):
@@ -30,54 +30,61 @@ class LoginForm(ModelForm):
         fields = ['username', 'password']
 
 
-class ConfigForm(ModelForm):
-    messenger = Messenger.objects.get(name='telegram')
-    config = Config.objects.get(messenger=messenger.id)
-
-
-    token = forms.CharField(max_length=100, required=True, label='Токен',
-                    widget=forms.TextInput(attrs={'placeholder': 'токен'}), initial=config.token)
-    is_on = forms.CharField(max_length=100, label='Бот включен',
-                    widget=forms.CheckboxInput(), initial=config.is_on)
-
-
-    class Meta:
-        model = Config
-        fields = ['token', 'is_on']
-
-
 class FindUserForm(ModelForm):
-
-    search_id = forms.CharField(max_length=40, required=False, label='ID пользователя',
+    user_id = forms.CharField(max_length=100, required=False, label='ID пользователя',
                     widget=forms.TextInput(attrs={'placeholder': 'все пользователи'}))
 
     class Meta:
         model = MyUser
-        fields = ['search_id']
+        fields = ['user_id']
 
 
+class ConfigForm(ModelForm):
+    class Meta:
+        model = Config
+        fields = ['token', 'is_on']
+
+        widgets = {
+            'token': TextInput(attrs={'placeholder': 'токен'}),
+            'is_on': CheckboxInput(),
+        }
 
 
-class BotSchemesForm(forms.Form):
-    tr_number = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='Номер')
-    tr_scheme = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='Имя схемы')
-    tr_elements_number = forms.CharField(widget=forms.TextInput(attrs={'readonly': 'readonly'}), label='Количество элементов')
+class SchemeForm(ModelForm):
+    class Meta:
+        model = Scheme
+        fields = ['name']
+
+        widgets = {
+            'name': TextInput(attrs={'placeholder': 'имя ветки'})
+        }
 
 
-class BotSchemeForm(forms.Form):
-    name = forms.CharField(max_length=40, required='required', label='Имя ветки')
+class ElementForm(ModelForm):
+    class Meta:
+        model = Element
+        fields = ['scheme', 'name', 'text']
+
+        widgets = {
+            'text': TextInput(attrs={'placeholder': 'текст элемента'}),
+        }
 
 
-class BotElementForm(forms.Form):
-    name = forms.CharField(max_length=40, required='required', label='Имя элемента')
-    text = forms.CharField(max_length=40, required='required', label='Текст элемента')
+class AdditionForm(ModelForm):
+    class Meta:
+        model = ElementAddition
+        fields = ['text', 'addition']
+
+        widgets = {
+            'text': TextInput(attrs={'placeholder': 'текст / условие дополнения'}),
+        }
 
 
-class BotAdditionForm(forms.Form):
-    text = forms.CharField(max_length=40, required='required', label='Текст / Условие дополнения')
-    link = forms.MultipleChoiceField(choices=(('1', 'один'), ('2', 'два'), ('3', 'три')))
+class TransitionForm(ModelForm):
+    class Meta:
+        model = ElementTransition
+        fields = ['text', 'transition']
 
-
-class BotTransitionForm(forms.Form):
-    text = forms.CharField(max_length=40, required='required', label='Текст / Условие перехода')
-
+        widgets = {
+            'text': TextInput(attrs={'placeholder': 'текст / условие перехода'}),
+        }

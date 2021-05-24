@@ -1,0 +1,40 @@
+{% extends 'manager/base.html' %}
+
+{% block title %}Схемы{% endblock %}
+
+{% block content %}
+<form method="post">
+    {% csrf_token %}
+    <div class="caption">Схемы</div>
+    <br>
+    <button name="create_btn" type="submit">Создать схему</button>
+</form>
+<br>
+<div class="caption">Все схемы:</div>
+<table>
+    <tbody>
+    <tr>
+        <th>№</th>
+        <th>Имя схемы</th>
+        <th>Количество элементов</th>
+        <th>Управление</th>
+    </tr>
+    {% for scheme in schemes %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ scheme.name }}</td>
+        <td>{{ scheme.elements_number }}</td>
+        <td>
+            <a href="{% url 'scheme-update' scheme.id %}">
+                <button>Редактировать</button>
+            </a>
+            <a href="{% url 'scheme-delete' scheme.id %}">
+                <button>Удалить</button>
+            </a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

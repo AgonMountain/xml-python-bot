@@ -14,15 +14,10 @@ XML = XmlTreeManager(XML_PATH)
 import logging
 from aiogram import Bot, Dispatcher, executor, types
 
-# TODO
-configs = DB.get_all_configs()
-messenger_id = DB.get_messenger_id('telegram')
-
-TM_BOT_TOKEN = None
-for config in configs:
-    if config[1] == messenger_id:
-        TM_BOT_TOKEN = config[2]
-
+config = DB.get_config('tm')
+TM_BOT_TOKEN = config['token']
+is_on = config['is_on']
+messenger_id = config['messenger_id']
 
 logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TM_BOT_TOKEN)
@@ -41,7 +36,8 @@ async def bot(message: types.Message):
     @param message сообщение от пользователя
     @param DB база данных пользователей
     """
-    a = answer_generator.generate(DB, XML, messenger_id, message.from_user.id, message.text)
+    config = DB.get_config('tm')
+    a = answer_generator.generate(config['is_on'], DB, XML, messenger_id, message.from_user.id, message.text)
     await message.answer(a['message'], reply_markup=kb.get_keyboard_markup(a['button_text_list']))
 
 """Запускаем бота"""

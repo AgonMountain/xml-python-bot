@@ -1,0 +1,43 @@
+{% extends 'manager/base_empty.html' %}
+{% load static %}
+{% block title %}Схема{% endblock %}
+
+{% block content %}
+<div>
+    <div class="caption">Схема</div>
+    <a href="{% url 'schemes' %}">
+        <button>Вернуться назад</button>
+    </a>
+</div>
+<br>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form }}
+    <span>{{ error }}</span>
+    <button name="save_btn" type="submit">Сохранить</button>
+    <button name="cancel_btn" type="submit">Отмена</button>
+    <br><br>
+    <table>
+        <tbody>
+        <tr>
+            <th>№</th>
+            <th>Имя элемента</th>
+            <th>Количество дополнений</th>
+            <th>Количество переходов</th>
+            <th>Управление</th>
+        </tr>
+        {% for element in elements %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ element.name }}</td>
+            <td>{{ element.additions_number }}</td>
+            <td>{{ element.transitions_number }}</td>
+            <td>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</form>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+{% block title %}Конфигурация{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'manager/css/config.css' %}">
+
+<form method="post">
+    {% csrf_token %}
+    <div class="caption">Конфигурация</div><br>
+    <div class="caption">Telegram</div>
+    {{ form_telegram_config }}
+    <button name="telegram_save_btn" type="submit">Сохранить</button>
+    <button name="telegram_cancel_btn" type="submit">Отмена</button>
+    <br><br>
+<!--    <div class="caption">VK</div>-->
+<!--    {{ form_vk_config }}-->
+<!--    <button name="vk_save_btn" type="submit">Сохранить</button>-->
+<!--    <button name="vk_cancel_btn" type="submit">Отмена</button>-->
+</form>
+{% endblock %}

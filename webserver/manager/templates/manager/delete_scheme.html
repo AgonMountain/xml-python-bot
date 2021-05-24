@@ -1,0 +1,18 @@
+{% extends 'manager/base_empty.html' %}
+{% load static %}
+{% block title %}Удалить{% endblock %}
+
+{% block content %}
+
+<div class="caption">Удалить компонент?</div>
+<div>
+    <form method="post">
+        {% csrf_token %}
+        <button name="delete_btn" type="submit">Удалить</button>
+    </form>
+    <a href="{% url 'schemes' %}">
+        <button>Отмена</button>
+    </a>
+</div>
+
+{% endblock %}
