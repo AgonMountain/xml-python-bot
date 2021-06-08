@@ -11,8 +11,8 @@ class XmlUpdate(models.Model):
         return 'Требуется обновление XML файла: ' + need_update_str
 
     class Meta:
-        verbose_name = 'Обновление'
-        verbose_name_plural = '0. Обновление'
+        verbose_name = 'Обновление схем'
+        verbose_name_plural = '1. Обновление схем'
 
 
 class Messenger(models.Model):
@@ -23,7 +23,7 @@ class Messenger(models.Model):
 
     class Meta:
         verbose_name = 'Мессенджер'
-        verbose_name_plural = '1. Мессенджеры'
+        verbose_name_plural = 'Мессенджеры'
 
 
 class Config(models.Model):
@@ -45,7 +45,7 @@ class Config(models.Model):
 class User(models.Model):
     messenger = models.ForeignKey('Messenger', on_delete=models.CASCADE)
     user_id = models.CharField('ID пользователя', max_length=100)
-    element = models.ForeignKey('Element', null=True, on_delete=models.SET_NULL)
+    element = models.ForeignKey('Element', null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return '(' + self.messenger.name + ') ' + self.user_id + ": " + self.element.text
@@ -72,7 +72,7 @@ class Element(models.Model):
     text = models.TextField('Текст элемента')
 
     def __str__(self):
-        return self.scheme.name + ': ' + self.text
+        return self.scheme.name + ': ' + ' (' + self.name + ') ' + self.text
 
     class Meta:
         verbose_name = 'Элемент'
@@ -85,7 +85,7 @@ class ElementAddition(models.Model):
     text = models.CharField('Текст дополнения', max_length=100)
 
     def __str__(self):
-        return self.element.text + ': ' + self.text
+        return self.element.name + ' (' + self.element.scheme.name + ') ' + ' <--- ' + self.addition.name + ' (' + self.addition.scheme.name + ') , ' + self.text
 
     class Meta:
         verbose_name = 'Дополнение'
@@ -98,7 +98,7 @@ class ElementTransition(models.Model):
     text = models.CharField('Текст перехода', max_length=100)
 
     def __str__(self):
-        return self.element.text + ': ' + self.text
+        return self.element.name + ' (' + self.element.scheme.name + ') ' + ' ---> ' + self.transition.name + ' (' + self.transition.scheme.name + ') , ' + self.text
 
     class Meta:
         verbose_name = 'Переход'

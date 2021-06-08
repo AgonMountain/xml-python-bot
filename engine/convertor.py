@@ -76,15 +76,15 @@ class Convertor():
                     addition_data = DB.get_addition_data(addition_id[0])
 
                     addition_element = DB.get_element_data(addition_data['addition_id'])
-
-                    XML.create_addition(element['original'], scheme[1], addition_element['name'], addition_data['text'])
+                    scheme_name = DB.get_scheme_data(addition_element['scheme_id'])['name']
+                    XML.create_addition(element['original'], scheme_name, addition_element['name'], addition_data['text'])
 
                 for transition_id in transition_id_list:
                     transition_data = DB.get_transition_data(transition_id[0])
 
                     transition_element = DB.get_element_data(transition_data['transition_id'])
-
-                    XML.create_transition(element['original'], scheme[1], transition_element['name'], transition_data['text'])
+                    scheme_name = DB.get_scheme_data(transition_element['scheme_id'])['name']
+                    XML.create_transition(element['original'], scheme_name, transition_element['name'], transition_data['text'])
 
     @staticmethod
     def clean_xml_reference_from_db(DB_PATH):

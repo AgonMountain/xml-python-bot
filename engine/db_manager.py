@@ -8,6 +8,7 @@ class DbManager(object):
     Работа с базой данных
     """
 
+    """ Больше чем функции """
     def __init__(self, DB_PATH):
         """
         Конструктор (подключение к базе данных)
@@ -36,28 +37,7 @@ class DbManager(object):
             self.connection.commit()
             return result[0]
 
-    def get_config(self, messenger_name):
-        """
-        """
-        messenger_id = self.get_messenger_id(messenger_name)
-
-        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
-                        "` WHERE `messenger_id` = ?"
-
-        '''Выполнение запроса + обработка ошибки'''
-        try:
-            self.cursor.execute(sql_statement, (str(messenger_id),))
-            result = self.cursor.fetchone()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-            if result == None:
-                return result
-            else:
-                r = {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
-                return r
-
+    """ Работа с обновлениями """
     def get_need_for_update_xml(self):
         """
         """
@@ -91,10 +71,136 @@ class DbManager(object):
         else:
             self.connection.commit()
 
-    # TODO
-    def from_list_to_glossary(self, list):
-        pass
+    """ Работа с мессенджарами """
+    def get_messenger_id(self, name):
+        """
+        Получить все мессенджеры ("типы")
+        @param name имя мессенджера
+        @return id
+        """
+        sql_statement = "SELECT `id` FROM `" + DB_MESSENGER_TABLE_NAME + "` WHERE `name` = ?"
 
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(name),))
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            return result[0]
+
+    """ Работа с конфигурациями """
+    def add_config(self, token, messenger_id, is_on):
+        """
+        Добавить конфигурацию
+        @param token токен для подключения бота к мессенджеру
+        @param messenger_id id мессенджера
+        @param is_on состояние активности бота
+        """
+        sql_statement = "INSERT INTO `" + DB_CONFIG_TABLE_NAME + \
+                        "` (`messenger_id`, `token`, `is_on`) VALUES(?,?,?)"
+
+        """Выполнение запроса + обработка ошибки"""
+        try:
+            self.cursor.execute(sql_statement, (str(messenger_id), str(token), str(is_on)))
+            result = self.cursor.fetchall()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            return self.return_id(DB_CONFIG_TABLE_NAME, 'token', token)
+    def update_config(self, id, new_token, new_is_on):
+        """
+        Обновить данные конфигурации
+        @param id id конфигурации
+        @param new_token новый токен для подключения бота к мессенджеру
+        @param new_is_on новое состояние активности бота
+        """
+        sql_statement = "UPDATE `" + DB_CONFIG_TABLE_NAME + \
+                        "` SET `token` = ?, `is_on` = ? WHERE `id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(new_token), str(new_is_on), str(id)))
+            result = self.cursor.fetchall()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+    def get_config(self, messenger_name):
+        """
+        """
+        messenger_id = self.get_messenger_id(messenger_name)
+
+        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
+                        "` WHERE `messenger_id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(messenger_id),))
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            if result == None:
+                return result
+            else:
+                r = {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
+                return r
+    def get_all_configs(self):
+        """
+        Получить все конфигурации в виде списка списков, содержащих данные конфигурации
+        @return [ ('id', 'messenger_id', 'token', 'is_on') ]
+        """
+        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + "`"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement)
+            result = self.cursor.fetchall()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            return result
+    def get_config_data(self, id):
+        """
+        Получить данные конфигурации
+        @param token токен для подключения бота к мессенджеру, по которму мы будет искать конфигурацию для получения данных
+        @return {'id', 'messenger_id', 'token', 'is_on'}
+        """
+        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
+                        "` WHERE `id` = ?"
+
+        '''Выполнение запроса + обработка ошибки'''
+        try:
+            self.cursor.execute(sql_statement, (str(id),))
+            result = self.cursor.fetchone()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
+            if result == None:
+                return result
+            else:
+                r = {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
+                return r
+    def clean_table_config(self):
+        """
+        Очистить таблицу с конфигурациями
+        """
+        sql_statement = "DELETE FROM `" + DB_CONFIG_TABLE_NAME + "`"
+
+        """Выполнение запроса + обработка ошибки"""
+        try:
+            self.cursor.execute(sql_statement)
+            result = self.cursor.fetchall()
+        except sqlite3.DatabaseError as error:
+            print('Error:', error)
+        else:
+            self.connection.commit()
 
     """ Работа с пользователями """
     def add_user(self, user_messenger_id, element_id, messenger_id):
@@ -160,116 +266,6 @@ class DbManager(object):
         Очистить таблицу с пользователями
         """
         sql_statement = "DELETE FROM `" + DB_USER_TABLE_NAME + "`"
-
-        """Выполнение запроса + обработка ошибки"""
-        try:
-            self.cursor.execute(sql_statement)
-            result = self.cursor.fetchall()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-
-    """ Работа с мессенджарами """
-    def get_messenger_id(self, name):
-        """
-        Получить все мессенджеры ("типы")
-        @param name имя мессенджера
-        @return id
-        """
-        sql_statement = "SELECT `id` FROM `" + DB_MESSENGER_TABLE_NAME + "` WHERE `name` = ?"
-
-        '''Выполнение запроса + обработка ошибки'''
-        try:
-            self.cursor.execute(sql_statement, (str(name),))
-            result = self.cursor.fetchone()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-            return result[0]
-
-    """ Работа с конфигурациями """
-    def add_config(self, token, messenger_id, is_on):
-        """
-        Добавить конфигурацию
-        @param token токен для подключения бота к мессенджеру
-        @param messenger_id id мессенджера
-        @param is_on состояние активности бота
-        """
-        sql_statement = "INSERT INTO `" + DB_CONFIG_TABLE_NAME + \
-                        "` (`messenger_id`, `token`, `is_on`) VALUES(?,?,?)"
-
-        """Выполнение запроса + обработка ошибки"""
-        try:
-            self.cursor.execute(sql_statement, (str(messenger_id), str(token), str(is_on)))
-            result = self.cursor.fetchall()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-            return self.return_id(DB_CONFIG_TABLE_NAME, 'token', token)
-    def update_config(self, id, new_token, new_is_on):
-        """
-        Обновить данные конфигурации
-        @param id id конфигурации
-        @param new_token новый токен для подключения бота к мессенджеру
-        @param new_is_on новое состояние активности бота
-        """
-        sql_statement = "UPDATE `" + DB_CONFIG_TABLE_NAME + \
-                        "` SET `token` = ?, `is_on` = ? WHERE `id` = ?"
-
-        '''Выполнение запроса + обработка ошибки'''
-        try:
-            self.cursor.execute(sql_statement, (str(new_token), str(new_is_on), str(id)))
-            result = self.cursor.fetchall()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-    def get_all_configs(self):
-        """
-        Получить все конфигурации в виде списка списков, содержащих данные конфигурации
-        @return [ ('id', 'messenger_id', 'token', 'is_on') ]
-        """
-        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + "`"
-
-        '''Выполнение запроса + обработка ошибки'''
-        try:
-            self.cursor.execute(sql_statement)
-            result = self.cursor.fetchall()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-            return result
-    def get_config_data(self, id):
-        """
-        Получить данные конфигурации
-        @param token токен для подключения бота к мессенджеру, по которму мы будет искать конфигурацию для получения данных
-        @return {'id', 'messenger_id', 'token', 'is_on'}
-        """
-        sql_statement = "SELECT `id`, `messenger_id`, `token`, `is_on` FROM `" + DB_CONFIG_TABLE_NAME + \
-                        "` WHERE `id` = ?"
-
-        '''Выполнение запроса + обработка ошибки'''
-        try:
-            self.cursor.execute(sql_statement, (str(id),))
-            result = self.cursor.fetchone()
-        except sqlite3.DatabaseError as error:
-            print('Error:', error)
-        else:
-            self.connection.commit()
-            if result == None:
-                return result
-            else:
-                r = {'id': result[0], 'messenger_id': result[1], 'token': result[2], 'is_on': result[3]}
-                return r
-    def clean_table_config(self):
-        """
-        Очистить таблицу с конфигурациями
-        """
-        sql_statement = "DELETE FROM `" + DB_CONFIG_TABLE_NAME + "`"
 
         """Выполнение запроса + обработка ошибки"""
         try:

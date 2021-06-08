@@ -3,7 +3,6 @@ from .models import *
 
 
 admin.site.register(XmlUpdate)
-admin.site.register(Messenger)
 admin.site.register(Config)
 admin.site.register(User)
 admin.site.register(Scheme)

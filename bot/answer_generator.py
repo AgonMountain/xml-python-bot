@@ -1,7 +1,4 @@
-from data.config import IDONTUNDERSTAND, XML_BRANCH_NAME_DEFAULT, XML_ELEMENT_NAME_DEFAULT
-from data.config import DB_PATH, XML_PATH
-from engine.db_manager import DbManager
-from engine.xml_manager import XmlTreeManager
+from data.config import I_DONT_UNDERSTAND, BOTS_IS_TURNED_OFF, NO_SCHEMES, SCHEME_OR_ELEMENT_DOES_NOT_EXIST
 
 
 def generate(is_on, DB, XML, messenger_id, user_id, message_text):
@@ -14,18 +11,16 @@ def generate(is_on, DB, XML, messenger_id, user_id, message_text):
     return out ответное сообщение out['message'] и список слов для кнопок out['button_text_list']
     """
 
-    '''переменные функции'''
     out = {'message': None, 'button_text_list': None}
-    out['message'] = IDONTUNDERSTAND
+    out['message'] = I_DONT_UNDERSTAND
     stop_loop_flag = False  # незачем крутить циклы впустую
 
     if is_on:
-        '''актуальные данные пользователя'''
-        user_data = DB.get_user_data(user_id)
+        user_data = DB.get_user_data(user_id)  # актуальные данные пользователя
 
-        '''нет пользователя в бд -> создаем его и задаем значение по умолчанию'''
         if user_data == None:
-            element_id = DB.get_element_id(XML_ELEMENT_NAME_DEFAULT)
+            '''нет пользователя в бд -> создаем его и задаем значение по умолчанию'''
+            element_id = DB.get_element_id(-1)
             DB.add_user(user_id, element_id, messenger_id)
 
             user_data = DB.get_user_data(user_id)
@@ -85,14 +80,14 @@ def generate(is_on, DB, XML, messenger_id, user_id, message_text):
         out['button_text_list'] = transition_text_list + addition_text_list
 
         '''пользователь ответил что-то непонятное, говорим ему об этом + повторяем вопрос и варианты ответов'''
-        if out['message'] == IDONTUNDERSTAND:
+        if out['message'] == I_DONT_UNDERSTAND:
             out['message'] += '\n\nПожалуйста, ответить на следующее сообщение с помощью кнопок снизу:\n\n' \
                               + element.text.text
 
         return out
 
     else:
-        out['message'] = 'Сейчас Бот отключен Администратором, пожалуйста повторите попытку позже.'
+        out['message'] = BOTS_IS_TURNED_OFF
         out['button_text_list'] = ['Повторить попытку']
 
         return out

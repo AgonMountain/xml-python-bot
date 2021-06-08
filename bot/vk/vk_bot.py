@@ -3,13 +3,11 @@
 """База данных и компоненты для работы с ней"""
 from engine.db_manager import DbManager
 from data.config import DB_PATH
-
 DB = DbManager(DB_PATH)
 
 """XML и компоненты для работы с ним"""
 from engine.xml_manager import XmlTreeManager
 from data.config import XML_PATH
-
 XML = XmlTreeManager(XML_PATH)
 
 """Основные элементы vk_api для работы бота"""
